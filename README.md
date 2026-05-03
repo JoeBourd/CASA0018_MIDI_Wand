@@ -28,26 +28,22 @@ Data were collected using the same Arduino Nano 33 BLE Sense directly into Edge 
 <img width="220" height="185" alt="Screenshot 2026-05-03 at 11 36 22" src="https://github.com/user-attachments/assets/244d8278-41f8-498b-a229-ce0d448fecd0" />
 
 
-
-<img width="141" height="90" alt="image" src="https://github.com/user-attachments/assets/f11e3ff2-0125-4f82-abd6-103b42eef5e9" />
+<img width="233" height="161" alt="Screenshot 2026-05-03 at 11 37 57" src="https://github.com/user-attachments/assets/48f94ef8-41a7-404f-ad0c-3bf056c89c2e" />
 
 
 Each gesture was sampled continuously for around ten minutes and manually split into discrete gesture events. ‘Fast’ segments were around 2000ms, while ‘slow’ segments were around 4000ms, and ‘unknown’ segments were set at 2500ms. Overall, 1h 30m 31s data was collected. 20% of these samples were moved to the test dataset to achieve an 80/20 training/test split.
 
 
 
+<img width="513" height="295" alt="Screenshot 2026-05-03 at 11 38 26" src="https://github.com/user-attachments/assets/14dbfc11-a880-4a0f-9bdd-038eb1cf4b46" />
 
-
-
-
-<img width="293" height="179" alt="image" src="https://github.com/user-attachments/assets/bd26f1a5-537f-4d73-81a4-b2508dd18101" />
 
 ## Model
 For the initial digital signal processing (DSP), it was thought that the spectral analysis processing block on Edge Impulse would work best. This is because it can extract key features from simple, low frequency movements using filtering (Edge Impulse Documentation, 2026). A convolutional neural network (CNN) architecture was hypothesised as most appropriate for this application due to its ability to learn relations between datapoints in a time series (Warden and Situnayake, 2019). This will be useful for learning features that involve similar directional movements but at different speeds. The CNN can extract specific features within the larger movement, which are then fed into dense layers which will enable the model to learn which combinations of features constitute a certain gesture (Warden and Situnayake, 2019).
  
 
 
-<img width="236" height="118" alt="image" src="https://github.com/user-attachments/assets/bc1dfa9b-46db-4002-9269-b407737304c4" />
+<img width="430" height="252" alt="Screenshot 2026-05-03 at 11 38 45" src="https://github.com/user-attachments/assets/7fb91143-ca75-4362-9262-01254da6bee1" />
 
 
 
@@ -55,15 +51,12 @@ For the initial digital signal processing (DSP), it was thought that the spectra
 Experiments were split into two stages: choosing the DSP and feature extraction parameters and choosing the neural network architecture. DSP experiments were carried out while holding the neural architecture at its default settings, which were two dense layers only. The Syntiant IMU and spectral analysis processing blocks were tested, with the spectral analysis block having more adjustable parameters. Adding a low pass filter at 3Hz to the spectral analysis block improved accuracy, likely due to filtering out unwanted high frequency noise that was not part of the main gesture. This was supported by the increased visual similarity between samples post processing. Increasing the FFT length increases resolution of the frequency peaks, but there were limited returns after a length of 32. Window size had a significant impact on accuracy here, with a maximum of 5000ms performing the best, possibly as it captures the full length of the longest gesture. To reduce latency at inferencing, however, smaller window sizes were trialled and 2500ms was found to be the best trade-off between sampling duration and accuracy.
 
 
+<img width="430" height="187" alt="Screenshot 2026-05-03 at 11 39 04" src="https://github.com/user-attachments/assets/a984cb22-798d-493c-a809-a1c50d089def" />
 
 
+<img width="512" height="201" alt="Screenshot 2026-05-03 at 11 39 49" src="https://github.com/user-attachments/assets/66f16886-f397-4a30-a98a-f3a5a4eb838d" />
 
-<img width="249" height="84" alt="image" src="https://github.com/user-attachments/assets/044d4b7a-99d6-4585-969d-203de2567105" />
-
-
-
-
-<img width="305" height="259" alt="image" src="https://github.com/user-attachments/assets/5dcee81f-8cde-4cf1-a0ec-9789fc3e76fb" />
+<img width="407" height="251" alt="Screenshot 2026-05-03 at 11 40 03" src="https://github.com/user-attachments/assets/5e8e8d09-0174-4002-adbb-d771613aa848" /><img width="517" height="244" alt="Screenshot 2026-05-03 at 11 40 28" src="https://github.com/user-attachments/assets/ebe7f59b-8128-460e-b298-794d5c8e6344" />
 
 
 
@@ -71,14 +64,16 @@ The optimal run from these experiments (run 13) was used to then test the neural
 
 
 
-<img width="293" height="132" alt="image" src="https://github.com/user-attachments/assets/ad0b97b7-a2d1-478a-8275-ad3f07cc17e7" />
+<img width="517" height="244" alt="Screenshot 2026-05-03 at 11 40 42" src="https://github.com/user-attachments/assets/52b3c029-4cc6-4a89-8be9-a422822bb06b" />
+
 
 
 During model testing, samples in the test dataset that were predicted with low accuracy were fed into the training dataset and the model was retrained. Live classification was also experimented with, and it was noticed that when the device was stationary, it would often misclassify as FaderDownSlow, so an extra minute of stationary data was added to the Unknown class and the model was retrained. The final architecture was exported as a quantised TensorFlow Lite model.
 
 
 
-<img width="174" height="191" alt="image" src="https://github.com/user-attachments/assets/33fe09e6-2036-43cc-b302-63b482a9ff8e" />
+<img width="282" height="334" alt="Screenshot 2026-05-03 at 11 41 00" src="https://github.com/user-attachments/assets/a59ea179-e691-47e2-9ad4-392d1743b4b8" />
+
 
 
 
@@ -89,8 +84,8 @@ Across experiments, validation accuracy increased from 94.6% to 98.6%, while val
 
 
 
+<img width="492" height="273" alt="Screenshot 2026-05-03 at 11 41 22" src="https://github.com/user-attachments/assets/50435879-4f19-470d-b5de-07559fa5bc3a" />
 
-<img width="280" height="152" alt="image" src="https://github.com/user-attachments/assets/f607c7a6-f10b-4205-ac8d-4ef12dbffb67" />
 
 
 
