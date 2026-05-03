@@ -24,6 +24,7 @@ Once inference is complete, the predicted class will action a specific MIDI cont
 ## Data Collection
 Data were collected using the same Arduino Nano 33 BLE Sense directly into Edge Impulse via WebUSB. To create a rough spatial framework for the gestures, two points were marked on a wall, arranged vertically at a distance that felt natural to move through. This also enabled the introduction of variation around the default movement to mimic natural variation in hand movements. Sampling begun with the hand at a relaxed position by the side of the body, then brought up to the bottom marker. The Arduino was held by its USB connector to ensure consistent orientation. For fader movements, the Arduino was moved up or down between markers at different paces corresponding to the gesture class, while for knob movements the Arduino was rotated 90° about the bottom marker. 
 
+<img width="124" height="21" alt="image" src="https://github.com/user-attachments/assets/551594e7-99bd-429f-87c4-3a228b70f1dc" />
 Class	Training	Test
 FaderDownFast	176	44
 FaderDownSlow	96	24
@@ -38,14 +39,7 @@ Total	1126	254
 
 
 
-
-
-
-
-
-
-
-
+<img width="141" height="90" alt="image" src="https://github.com/user-attachments/assets/f11e3ff2-0125-4f82-abd6-103b42eef5e9" />
 
 
 Each gesture was sampled continuously for around ten minutes and manually split into discrete gesture events. ‘Fast’ segments were around 2000ms, while ‘slow’ segments were around 4000ms, and ‘unknown’ segments were set at 2500ms. Overall, 1h 30m 31s data was collected. 20% of these samples were moved to the test dataset to achieve an 80/20 training/test split.
@@ -58,18 +52,16 @@ Each gesture was sampled continuously for around ten minutes and manually split 
 
 
 
+<img width="290" height="159" alt="image" src="https://github.com/user-attachments/assets/7723449b-a3be-4e86-aeb0-41873c9ac353" />
 
-
-
-
-
-
-<img width="586" height="788" alt="image" src="https://github.com/user-attachments/assets/befaa8dc-c12e-4b62-9573-0566148baf0a" />
 
 ## Model
 For the initial digital signal processing (DSP), it was thought that the spectral analysis processing block on Edge Impulse would work best. This is because it can extract key features from simple, low frequency movements using filtering (Edge Impulse Documentation, 2026). A convolutional neural network (CNN) architecture was hypothesised as most appropriate for this application due to its ability to learn relations between datapoints in a time series (Warden and Situnayake, 2019). This will be useful for learning features that involve similar directional movements but at different speeds. The CNN can extract specific features within the larger movement, which are then fed into dense layers which will enable the model to learn which combinations of features constitute a certain gesture (Warden and Situnayake, 2019).
  
-<img width="468" height="411" alt="image" src="https://github.com/user-attachments/assets/33dc327c-36cf-4867-a471-2d57cf57e77e" />
+
+
+<img width="236" height="118" alt="image" src="https://github.com/user-attachments/assets/bc1dfa9b-46db-4002-9269-b407737304c4" />
+
 
 
 ## Experiments
@@ -78,13 +70,29 @@ Experiments were split into two stages: choosing the DSP and feature extraction 
 
 
 
+
+<img width="249" height="84" alt="image" src="https://github.com/user-attachments/assets/044d4b7a-99d6-4585-969d-203de2567105" />
+
+
+
+
+<img width="305" height="259" alt="image" src="https://github.com/user-attachments/assets/5dcee81f-8cde-4cf1-a0ec-9789fc3e76fb" />
+
+
+
 The optimal run from these experiments (run 13) was used to then test the neural network architecture. The architecture was initialised based on TinyML’s ‘Magic Wand’ example, which was trained to pick out discrete gestures (Warden and Situnayake, 2019). Larger filter and kernel sizes increased accuracy in the convolutional layers, and an optimum dense layer neuron size was found as 50 and 20 respectively. Learning rate was increased from 0.0005 to 0.001 and 0.01, but the initial lower rate performed the best. This was also found with dropout rates between both layer types. To test whether reducing model size and therefore complexity would impact inferencing, one convolutional layer was removed, which appeared to increase training and validation accuracy. By reducing model complexity, this could prevent overfitting as well as reduce latency during inferencing (Warden and Situnayake, 2019).
 
 
 
+<img width="293" height="132" alt="image" src="https://github.com/user-attachments/assets/ad0b97b7-a2d1-478a-8275-ad3f07cc17e7" />
+
+
 During model testing, samples in the test dataset that were predicted with low accuracy were fed into the training dataset and the model was retrained. Live classification was also experimented with, and it was noticed that when the device was stationary, it would often misclassify as FaderDownSlow, so an extra minute of stationary data was added to the Unknown class and the model was retrained. The final architecture was exported as a quantised TensorFlow Lite model.
 
-<img width="498" height="400" alt="image" src="https://github.com/user-attachments/assets/a3117c80-3b1a-43c7-9098-4e07ff63869f" />
+
+
+<img width="174" height="191" alt="image" src="https://github.com/user-attachments/assets/33fe09e6-2036-43cc-b302-63b482a9ff8e" />
+
 
 
 ## Results and Observations
@@ -95,11 +103,16 @@ Across experiments, validation accuracy increased from 94.6% to 98.6%, while val
 
 
 
+<img width="280" height="152" alt="image" src="https://github.com/user-attachments/assets/f607c7a6-f10b-4205-ac8d-4ef12dbffb67" />
+
+
+
+
 Despite the model’s high accuracy, testing the MIDI Wand on a virtual instrument revealed that some gestures were not recognised consistently. This was especially true for fader movements, possibly because the model had learned similar up or down gestures as sampling had captured bringing the sensor to its initial start height or moving it to a relaxed position as well as the focal gesture. Recognising the start and end of a gesture is a key issue involved in sensor based gesture recognition, and better data segmentation at the data collection phase could mitigate this (Tai et al., 2018). Introducing more variation into the dataset also help, which may involve increasing the number of people to input data, as well as changing whether that person is standing or sitting. Currently, the output processing in Arduino IDE involves taking a predicted class above a 0.6 probability threshold and using it to action a series of stepwise MIDI outputs that increase or decrease a parameter over time. Sampling happens automatically once an output is finished. This limits the user’s ability to engage with the device expressively, as they can only action discrete outputs. They are also restricted temporally by the sampling buffer, so must wait when the device is ready to change a parameter. A continuous gesture model would enable more real time, precise outputs according to user input, and could be deployed on an edge device (Tai et al., 2018). Adding a button that could be pressed to start sampling would allow the user to control when they want a parameter changed. Adding an ergonomic housing could also promote more naturalistic movements and increase expressivity (Graf and Barthet, 2022).
-<img width="576" height="644" alt="image" src="https://github.com/user-attachments/assets/d899bc79-42bf-4775-92cc-1f34c19e8924" />
+
 
 ## Conclusion
-The MIDI Wand provides a window into using embedded machine learning to introduce embodied, expressive interaction into digital musical instrument design. By translating natural movement into a MIDI control change, it offers a more intuitive and dynamic interface than standard MIDI controllers. Although the model achieves high accuracy, tweaks at each stage of the development pipeline are necessary to fully realise its goal. While at the prototype stage, it demonstrates the potential for edge AI to augment HCI in music production.<img width="468" height="117" alt="image" src="https://github.com/user-attachments/assets/539ac6a8-e7f9-4977-b6f1-ee0fa9356fea" />
+The MIDI Wand provides a window into using embedded machine learning to introduce embodied, expressive interaction into digital musical instrument design. By translating natural movement into a MIDI control change, it offers a more intuitive and dynamic interface than standard MIDI controllers. Although the model achieves high accuracy, tweaks at each stage of the development pipeline are necessary to fully realise its goal. While at the prototype stage, it demonstrates the potential for edge AI to augment HCI in music production.
 
 
 ## Bibliography
