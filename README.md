@@ -18,22 +18,7 @@ Once inference is complete, the predicted class will action a specific MIDI cont
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<img width="468" height="513" alt="image" src="https://github.com/user-attachments/assets/e6902382-4470-44e7-b9bd-079d2e64311c" />
+<img width="211" height="130" alt="image" src="https://github.com/user-attachments/assets/3525ee25-83a2-4cb9-93e7-153ab728fb29" />
 
 
 ## Data Collection
