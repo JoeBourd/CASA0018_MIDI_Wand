@@ -24,18 +24,8 @@ Once inference is complete, the predicted class will action a specific MIDI cont
 ## Data Collection
 Data were collected using the same Arduino Nano 33 BLE Sense directly into Edge Impulse via WebUSB. To create a rough spatial framework for the gestures, two points were marked on a wall, arranged vertically at a distance that felt natural to move through. This also enabled the introduction of variation around the default movement to mimic natural variation in hand movements. Sampling begun with the hand at a relaxed position by the side of the body, then brought up to the bottom marker. The Arduino was held by its USB connector to ensure consistent orientation. For fader movements, the Arduino was moved up or down between markers at different paces corresponding to the gesture class, while for knob movements the Arduino was rotated 90° about the bottom marker. 
 
-<img width="124" height="21" alt="image" src="https://github.com/user-attachments/assets/551594e7-99bd-429f-87c4-3a228b70f1dc" />
-Class	Training	Test
-FaderDownFast	176	44
-FaderDownSlow	96	24
-FaderUpFast	172	30
-FaderUpSlow	80	20
-KnobDownFast	136	33
-KnobDownSlow	92	23
-KnobUpFast	136	32
-KnobUpSlow	77	16
-Unknown	161	31
-Total	1126	254
+
+<img width="220" height="185" alt="Screenshot 2026-05-03 at 11 36 22" src="https://github.com/user-attachments/assets/244d8278-41f8-498b-a229-ce0d448fecd0" />
 
 
 
@@ -50,10 +40,7 @@ Each gesture was sampled continuously for around ten minutes and manually split 
 
 
 
-
-
-<img width="290" height="159" alt="image" src="https://github.com/user-attachments/assets/7723449b-a3be-4e86-aeb0-41873c9ac353" />
-
+<img width="293" height="179" alt="image" src="https://github.com/user-attachments/assets/bd26f1a5-537f-4d73-81a4-b2508dd18101" />
 
 ## Model
 For the initial digital signal processing (DSP), it was thought that the spectral analysis processing block on Edge Impulse would work best. This is because it can extract key features from simple, low frequency movements using filtering (Edge Impulse Documentation, 2026). A convolutional neural network (CNN) architecture was hypothesised as most appropriate for this application due to its ability to learn relations between datapoints in a time series (Warden and Situnayake, 2019). This will be useful for learning features that involve similar directional movements but at different speeds. The CNN can extract specific features within the larger movement, which are then fed into dense layers which will enable the model to learn which combinations of features constitute a certain gesture (Warden and Situnayake, 2019).
