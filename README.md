@@ -56,8 +56,7 @@ Experiments were split into two stages: choosing the DSP and feature extraction 
 
 <img width="512" height="201" alt="Screenshot 2026-05-03 at 11 39 49" src="https://github.com/user-attachments/assets/66f16886-f397-4a30-a98a-f3a5a4eb838d" />
 
-<img width="407" height="251" alt="Screenshot 2026-05-03 at 11 40 03" src="https://github.com/user-attachments/assets/5e8e8d09-0174-4002-adbb-d771613aa848" /><img width="517" height="244" alt="Screenshot 2026-05-03 at 11 40 28" src="https://github.com/user-attachments/assets/ebe7f59b-8128-460e-b298-794d5c8e6344" />
-
+<img width="407" height="251" alt="Screenshot 2026-05-03 at 11 40 03" src="https://github.com/user-attachments/assets/5e8e8d09-0174-4002-adbb-d771613aa848" />
 
 
 The optimal run from these experiments (run 13) was used to then test the neural network architecture. The architecture was initialised based on TinyML’s ‘Magic Wand’ example, which was trained to pick out discrete gestures (Warden and Situnayake, 2019). Larger filter and kernel sizes increased accuracy in the convolutional layers, and an optimum dense layer neuron size was found as 50 and 20 respectively. Learning rate was increased from 0.0005 to 0.001 and 0.01, but the initial lower rate performed the best. This was also found with dropout rates between both layer types. To test whether reducing model size and therefore complexity would impact inferencing, one convolutional layer was removed, which appeared to increase training and validation accuracy. By reducing model complexity, this could prevent overfitting as well as reduce latency during inferencing (Warden and Situnayake, 2019).
